@@ -32,7 +32,17 @@ Rules:
   They are search queries for finding relevant footage.
 - Preserve source_urls exactly.
 - Keep the same JSON keys and structure.
-- Use fluent spoken Telugu suitable for documentary narration.
+- Use concise, fluent spoken Telugu suitable for documentary narration.
+- STRICT LENGTH LIMITS:
+  - Short script: 105-145 Telugu words.
+  - Long script: 1,050-1,400 Telugu words.
+- Preserve every material fact, figure, date, percentage, name and conclusion.
+- Do not translate English sentence structures word-for-word when they
+  produce unnecessarily long Telugu sentences.
+- Remove repetitive phrasing, duplicated explanations and filler.
+- Never add background information or explanations absent from the source.
+- The storyboard voiceovers must reproduce the final Telugu script exactly.
+- Distribute the complete script across the existing storyboard scenes.
 - Avoid unnecessary English words; retain proper nouns and standard
   financial abbreviations where appropriate.
 - Return valid JSON only, with no Markdown fences or commentary.
