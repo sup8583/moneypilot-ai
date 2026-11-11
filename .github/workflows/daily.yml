@@ -1,57 +1,59 @@
-name: MoneyPilot daily production
+name: MoneyPilot AI Telugu Daily Production
+
 on:
   workflow_dispatch:
-    inputs:
-      mode:
-        description: "Start with draft; private_upload for testing; scheduled_upload only after YouTube API eligibility is confirmed"
-        required: true
-        default: draft
-        type: choice
-        options: [draft, private_upload, scheduled_upload]
   schedule:
-    - cron: "30 9 * * *" # 15:00 Asia/Kolkata
+    - cron: "30 9 * * *"
+
 permissions:
   contents: read
+
 concurrency:
-  group: moneypilot-daily
+  group: moneypilot-telugu-production
   cancel-in-progress: false
+
 jobs:
   produce:
     runs-on: ubuntu-latest
     timeout-minutes: 180
+
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       GEMINI_MODEL: gemini-2.5-flash
-      MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || vars.PIPELINE_MODE || 'draft' }}
-      YOUTUBE_CLIENT_SECRET_FILE: client_secret.json
-      YOUTUBE_TOKEN_FILE: token.json
-      SHORT_PUBLISH_TIME: "19:00"
-      LONG_PUBLISH_TIME: "21:00"
-      TIMEZONE: Asia/Kolkata
+      CHANNEL_NAME: MoneyPilot AI
+      CHANNEL_TAGLINE: Understand Money. Build Wealth.
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
-      - name: Install FFmpeg
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
-      - name: Install Python packages
-        run: pip install -r requirements.txt
-      - name: Restore OAuth secrets
-        env:
-          CLIENT_JSON: ${{ secrets.YOUTUBE_CLIENT_SECRET_JSON }}
-          TOKEN_JSON: ${{ secrets.YOUTUBE_TOKEN_JSON }}
+
+      - name: Install system dependencies
         run: |
-          if [ -n "$CLIENT_JSON" ]; then printf '%s' "$CLIENT_JSON" > client_secret.json; fi
-          if [ -n "$TOKEN_JSON" ]; then printf '%s' "$TOKEN_JSON" > token.json; fi
-      - name: Generate and optionally upload
-        run: python -m app.main
-      - name: Save generated videos
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-noto-core fonts-noto-extra
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Verify Telugu font and FFmpeg
+        run: |
+          ffmpeg -version
+          fc-match Telugu
+
+      - name: Generate Telugu videos
+        run: python -m app.automation
+
+      - name: Save production files
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: moneypilot-output-${{ github.run_id }}
+          name: moneypilot-telugu-${{ github.run_id }}
           path: output/
           if-no-files-found: warn
           retention-days: 7
