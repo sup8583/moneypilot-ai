@@ -99,7 +99,7 @@ def main():
         thumb = OUT / f"{kind}.jpg"
 
         print(f"Generating Telugu {kind} narration...")
-        make_voice(data[kind]["script"], audio)
+        make_voice(data[kind]["script"], audio, kind=kind)
 
         print(f"Rendering Telugu {kind} video...")
         render(
